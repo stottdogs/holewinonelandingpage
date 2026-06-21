@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HoleWinOne — Hole-in-one jackpot on real golf courses</title>
+  <meta name="description" content="Scan the QR at the tee, pay $5, take your swing. Ace the Par 3 and the course's live jackpot is yours.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: #FBF8F0; font-family: 'Space Grotesk', sans-serif; color: #0A130F; overflow-x: hidden; }
+    ::selection { background: #ECB22B; color: #0A130F; }
+
+    /* ---- NAV ---- */
+    .nav {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(12,58,44,.92); backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(236,178,43,.18);
+    }
+    .nav-inner {
+      max-width: 1160px; margin: 0 auto; padding: 14px 22px;
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    }
+    .nav-logo { display: flex; align-items: center; gap: 11px; text-decoration: none; }
+    .nav-logo-mark { width: 34px; height: 34px; flex: none; }
+    .nav-wordmark {
+      display: flex; align-items: center; gap: 3px;
+      font-family: 'Archivo', sans-serif; font-weight: 900; font-size: 20px;
+      letter-spacing: -.01em; color: #F4EFE2;
+    }
+    .win-box { background: #ECB22B; color: #0A130F; padding: 0 6px 1px; border-radius: 4px; }
+    .nav-links { display: flex; align-items: center; gap: 8px; }
+    .nav-link {
+      display: none; padding: 9px 14px; font-size: 14px; font-weight: 600;
+      color: #CDE0D6; text-decoration: none; border-radius: 8px;
+    }
+    .nav-cta {
+      padding: 9px 16px; font-size: 14px; font-weight: 700;
+      color: #0A130F; background: #ECB22B; text-decoration: none; border-radius: 8px;
+    }
+    @media (min-width: 760px) { .nav-link { display: inline-flex; } }
+
+    /* ---- HERO ---- */
+    .hero {
+      position: relative; background: #0C3A2C; color: #F4EFE2; overflow: hidden;
+      padding: clamp(64px,11vw,120px) 22px clamp(72px,12vw,128px);
+    }
+    .hero-bg { position: absolute; inset: 0; pointer-events: none; }
+    .hero-arc1 {
+      position: absolute; left: -10%; bottom: -30%; width: 120%; height: 70%;
+      background: radial-gradient(120% 100% at 50% 0%, #14543E 0%, #0C3A2C 70%);
+      border-radius: 50% 50% 0 0;
+    }
+    .hero-arc2 {
+      position: absolute; left: -10%; bottom: -46%; width: 120%; height: 70%;
+      background: #0A3526; border-radius: 50% 50% 0 0; opacity: .6;
+    }
+    .hero-ring1 {
+      position: absolute; right: -120px; top: -120px;
+      width: 420px; height: 420px; border-radius: 50%; border: 1px solid rgba(236,178,43,.14);
+    }
+    .hero-ring2 {
+      position: absolute; right: -30px; top: -30px;
+      width: 260px; height: 260px; border-radius: 50%; border: 1px solid rgba(236,178,43,.10);
+    }
+    .hero-content { position: relative; max-width: 920px; margin: 0 auto; text-align: center; }
+    .live-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(236,178,43,.12); border: 1px solid rgba(236,178,43,.32);
+      color: #ECB22B; font-family: 'Space Mono', monospace; font-size: 12px;
+      letter-spacing: .14em; text-transform: uppercase; padding: 7px 14px; border-radius: 999px;
+    }
+    .live-dot {
+      width: 7px; height: 7px; border-radius: 50%; background: #ECB22B;
+      animation: pulseDot 2s infinite;
+    }
+    .hero h1 {
+      font-family: 'Archivo', sans-serif; font-weight: 900;
+      font-size: clamp(40px,8vw,84px); line-height: .95; letter-spacing: -.03em;
+      margin: 22px 0 0;
+    }
+    .hero-gold { color: #ECB22B; }
+    .hero-sub {
+      font-size: clamp(16px,2.4vw,20px); line-height: 1.5; color: #CDE0D6;
+      max-width: 560px; margin: 20px auto 0;
+    }
+
+    /* Odometer card */
+    .odo-card {
+      margin: 40px auto 0; max-width: 460px;
+      background: #0A2A1F; border: 1px solid rgba(236,178,43,.28);
+      border-radius: 18px; padding: 26px 28px;
+      box-shadow: 0 30px 70px -30px rgba(0,0,0,.6);
+    }
+    .odo-label {
+      font-family: 'Space Mono', monospace; font-size: 11px;
+      letter-spacing: .2em; text-transform: uppercase; color: #8FB3A4;
+    }
+    .odo-amount { display: flex; align-items: baseline; justify-content: center; gap: 4px; margin-top: 10px; }
+    .odo-currency {
+      font-family: 'Archivo', sans-serif; font-weight: 900;
+      font-size: clamp(40px,8vw,64px); color: #ECB22B; letter-spacing: -.02em;
+    }
+    .odo-number {
+      font-family: 'Archivo', sans-serif; font-weight: 900;
+      font-size: clamp(40px,8vw,64px); color: #ECB22B; letter-spacing: -.01em;
+      font-variant-numeric: tabular-nums;
+    }
+    .odo-unit { font-family: 'Space Mono', monospace; font-size: 13px; color: #8FB3A4; margin-left: 6px; }
+    .odo-sub { font-size: 13px; color: #8FB3A4; margin-top: 8px; }
+
+    .hero-ctas { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 34px; }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: #ECB22B; color: #0A130F; font-weight: 800; font-size: 16px;
+      padding: 15px 28px; border-radius: 12px; text-decoration: none;
+      box-shadow: 0 12px 30px -10px rgba(236,178,43,.6);
+    }
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: transparent; color: #F4EFE2; font-weight: 700; font-size: 16px;
+      padding: 15px 26px; border-radius: 12px; text-decoration: none;
+      border: 1px solid rgba(244,239,226,.28);
+    }
+
+    /* ---- SECTION SHARED ---- */
+    .section-tag {
+      font-family: 'Space Mono', monospace; font-size: 12px;
+      letter-spacing: .22em; text-transform: uppercase; color: #C99312; font-weight: 700;
+    }
+    .section-h2 {
+      font-family: 'Archivo', sans-serif; font-weight: 900;
+      font-size: clamp(30px,5vw,48px); line-height: 1; letter-spacing: -.02em;
+      color: #0C3A2C; margin: 14px 0 0;
+    }
+    .section-intro { font-size: 17px; color: #4C5A50; line-height: 1.5; margin: 14px 0 0; }
+    .section-header { text-align: center; max-width: 620px; margin: 0 auto; }
+
+    /* ---- HOW IT WORKS ---- */
+    .how { max-width: 1160px; margin: 0 auto; padding: clamp(64px,10vw,110px) 22px; }
+    .steps {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px; margin-top: 48px;
+    }
+    .step {
+      background: #fff; border: 1px solid #EAE3D0; border-radius: 18px; padding: 30px 26px; position: relative;
+    }
+    .step.step-win { background: #0C3A2C; border-color: #0C3A2C; }
+    .step-num { font-family: 'Space Mono', monospace; font-size: 12px; color: #C99312; font-weight: 700; letter-spacing: .1em; }
+    .step-win .step-num { color: #ECB22B; }
+    .step-icon {
+      width: 54px; height: 54px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center; margin: 16px 0 18px;
+    }
+    .step-title { font-family: 'Archivo', sans-serif; font-weight: 800; font-size: 20px; color: #0C3A2C; }
+    .step-win .step-title { color: #ECB22B; }
+    .step-body { font-size: 14.5px; color: #4C5A50; line-height: 1.55; margin: 8px 0 0; }
+    .step-win .step-body { color: #CDE0D6; }
+
+    /* ---- LEGIT ---- */
+    .legit { background: #F3EEE0; border-top: 1px solid #E4DDC9; border-bottom: 1px solid #E4DDC9; }
+    .legit-inner { max-width: 1160px; margin: 0 auto; padding: clamp(64px,10vw,110px) 22px; }
+    .trust-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; margin-top: 48px; }
+    .trust-card { background: #fff; border: 1px solid #EAE3D0; border-radius: 18px; padding: 32px 28px; }
+    .trust-icon {
+      width: 52px; height: 52px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; margin-bottom: 18px;
+    }
+    .trust-title { font-family: 'Archivo', sans-serif; font-weight: 800; font-size: 19px; color: #0C3A2C; }
+    .trust-body { font-size: 14.5px; color: #4C5A50; line-height: 1.6; margin: 10px 0 0; }
+
+    /* ---- JACKPOT ---- */
+    .jackpot {
+      background: #0C3A2C; color: #F4EFE2; position: relative; overflow: hidden;
+    }
+    .jackpot-ring {
+      position: absolute; right: -140px; bottom: -140px;
+      width: 420px; height: 420px; border-radius: 50%; border: 1px solid rgba(236,178,43,.12);
+    }
+    .jackpot-inner {
+      max-width: 1160px; margin: 0 auto;
+      padding: clamp(64px,10vw,110px) 22px; position: relative;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 48px; align-items: center;
+    }
+    .jackpot-tag {
+      font-family: 'Space Mono', monospace; font-size: 12px;
+      letter-spacing: .22em; text-transform: uppercase; color: #ECB22B; font-weight: 700;
+    }
+    .jackpot h2 {
+      font-family: 'Archivo', sans-serif; font-weight: 900;
+      font-size: clamp(30px,5vw,48px); line-height: 1; letter-spacing: -.02em; margin: 14px 0 0;
+    }
+    .jackpot-desc { font-size: 17px; color: #CDE0D6; line-height: 1.6; margin: 18px 0 0; max-width: 440px; }
+    .jackpot-stats { display: flex; gap: 28px; margin-top: 28px; flex-wrap: wrap; }
+    .jackpot-stat-val { font-family: 'Archivo', sans-serif; font-weight: 900; font-size: 30px; color: #ECB22B; }
+    .jackpot-stat-label {
+      font-family: 'Space Mono', monospace; font-size: 11px;
+      letter-spacing: .12em; text-transform: uppercase; color: #8FB3A4; margin-top: 4px;
+    }
+
+    .jackpot-card {
+      background: #0A2A1F; border: 1px solid rgba(236,178,43,.28);
+      border-radius: 22px; padding: 36px 32px; text-align: center;
+    }
+    .jackpot-card-label {
+      font-family: 'Space Mono', monospace; font-size: 11px;
+      letter-spacing: .2em; text-transform: uppercase; color: #8FB3A4;
+    }
+    .jackpot-card-amount { display: flex; align-items: baseline; justify-content: center; gap: 3px; margin: 14px 0 6px; }
+    .jackpot-card-currency {
+      font-family: 'Archivo', sans-serif; font-weight: 900;
+      font-size: clamp(48px,9vw,72px); color: #ECB22B; letter-spacing: -.02em;
+    }
+    .jackpot-card-number {
+      font-family: 'Archivo', sans-serif; font-weight: 900;
+      font-size: clamp(48px,9vw,72px); color: #ECB22B; letter-spacing: -.01em;
+      font-variant-numeric: tabular-nums;
+    }
+    .jackpot-bar-track {
+      height: 10px; border-radius: 999px; background: rgba(255,255,255,.08);
+      overflow: hidden; margin-top: 18px;
+    }
+    .jackpot-bar-fill {
+      height: 100%; width: 0%; background: linear-gradient(90deg, #E2A015, #FFD659);
+      border-radius: 999px; transition: width .1s linear;
+    }
+    .jackpot-bar-labels {
+      display: flex; justify-content: space-between;
+      font-family: 'Space Mono', monospace; font-size: 11px; color: #8FB3A4; margin-top: 8px;
+    }
+
+    /* ---- FAQ ---- */
+    .faq-section { max-width: 820px; margin: 0 auto; padding: clamp(64px,10vw,110px) 22px; }
+    .faq-list { margin-top: 40px; display: flex; flex-direction: column; gap: 12px; }
+    .faq-item { background: #fff; border: 1px solid #EAE3D0; border-radius: 14px; overflow: hidden; }
+    .faq-btn {
+      width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      text-align: left; background: transparent; border: none; cursor: pointer; padding: 22px 24px;
+      font-family: 'Archivo', sans-serif; font-weight: 800; font-size: 17px; color: #0C3A2C;
+    }
+    .faq-icon {
+      flex: none; width: 26px; height: 26px; border-radius: 50%;
+      background: #F3EEE0; display: flex; align-items: center; justify-content: center;
+      font-size: 18px; color: #C99312; font-weight: 700;
+      transition: transform .2s; line-height: 1;
+    }
+    .faq-answer { display: none; padding: 0 24px 22px; font-size: 15px; line-height: 1.6; color: #4C5A50; }
+    .faq-item.open .faq-icon { transform: rotate(45deg); }
+    .faq-item.open .faq-answer { display: block; }
+
+    /* ---- FOR COURSES CTA ---- */
+    .courses-cta-section { max-width: 1160px; margin: 0 auto; padding: 0 22px clamp(64px,10vw,100px); }
+    .courses-cta-band {
+      background: #ECB22B; border-radius: 24px;
+      padding: clamp(40px,6vw,64px) clamp(28px,5vw,56px);
+      position: relative; overflow: hidden;
+    }
+    .courses-cta-ring {
+      position: absolute; right: -60px; top: -60px;
+      width: 240px; height: 240px; border-radius: 50%; border: 2px solid rgba(10,19,15,.12);
+    }
+    .courses-cta-grid {
+      position: relative; display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px; align-items: center;
+    }
+    .courses-cta-tag {
+      font-family: 'Space Mono', monospace; font-size: 12px;
+      letter-spacing: .2em; text-transform: uppercase; color: #7A5505; font-weight: 700;
+    }
+    .courses-cta-heading {
+      font-family: 'Archivo', sans-serif; font-weight: 900;
+      font-size: clamp(28px,4.5vw,42px); line-height: 1; letter-spacing: -.02em;
+      color: #0A130F; margin: 12px 0 0;
+    }
+    .courses-cta-body { font-size: 16px; color: #3A2E08; line-height: 1.55; margin: 14px 0 0; max-width: 440px; }
+    .btn-courses {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: #0C3A2C; color: #F4EFE2; font-weight: 800; font-size: 16px;
+      padding: 16px 28px; border-radius: 12px; text-decoration: none;
+      box-shadow: 0 14px 30px -12px rgba(10,19,15,.5);
+    }
+
+    /* ---- FOOTER ---- */
+    footer { background: #0A130F; color: #F4EFE2; }
+    .footer-inner {
+      max-width: 1160px; margin: 0 auto; padding: 48px 22px;
+      display: flex; flex-wrap: wrap; gap: 28px; align-items: center; justify-content: space-between;
+    }
+    .footer-mark { width: 36px; height: 36px; }
+    .footer-wordmark {
+      display: flex; align-items: center; gap: 3px;
+      font-family: 'Archivo', sans-serif; font-weight: 900; font-size: 19px; color: #F4EFE2;
+    }
+    .footer-tagline {
+      font-size: 13px; color: rgba(244,239,226,.5);
+      margin: 14px 0 0; max-width: 320px; line-height: 1.5;
+    }
+    .footer-links { display: flex; flex-direction: column; gap: 10px; }
+    .footer-link { font-size: 14px; color: #CDE0D6; text-decoration: none; }
+    .footer-link-gold { font-size: 14px; color: #ECB22B; text-decoration: none; font-weight: 700; }
+    .footer-bottom { border-top: 1px solid rgba(244,239,226,.1); }
+    .footer-bottom-inner {
+      max-width: 1160px; margin: 0 auto; padding: 18px 22px;
+      display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between;
+      font-family: 'Space Mono', monospace; font-size: 11px;
+      letter-spacing: .08em; color: rgba(244,239,226,.4);
+    }
+
+    @keyframes pulseDot {
+      0%   { box-shadow: 0 0 0 0 rgba(236,178,43,.55); }
+      70%  { box-shadow: 0 0 0 9px rgba(236,178,43,0); }
+      100% { box-shadow: 0 0 0 0 rgba(236,178,43,0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== NAV ===== -->
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="#top" class="nav-logo">
+        <div class="nav-logo-mark">
+          <svg viewBox="0 0 100 100" style="width:100%;height:100%;display:block;">
+            <defs><linearGradient id="gNav" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFD659"/><stop offset="1" stop-color="#E2A015"/></linearGradient></defs>
+            <circle cx="50" cy="50" r="47" fill="url(#gNav)"/>
+            <circle cx="50" cy="50" r="36" fill="none" stroke="#0C3A2C" stroke-width="4"/>
+            <circle cx="50" cy="50" r="24" fill="none" stroke="#0C3A2C" stroke-width="4"/>
+            <circle cx="50" cy="50" r="12.5" fill="#0C3A2C"/>
+          </svg>
+        </div>
+        <span class="nav-wordmark">
+          <span>Hole</span><span class="win-box">WIN</span><span>One</span>
+        </span>
+      </a>
+      <div class="nav-links">
+        <a href="#how" class="nav-link">How it works</a>
+        <a href="#faq" class="nav-link">FAQ</a>
+        <a href="/for-courses" class="nav-cta">For Courses</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ===== HERO ===== -->
+  <header id="top" class="hero">
+    <div class="hero-bg">
+      <div class="hero-arc1"></div>
+      <div class="hero-arc2"></div>
+      <div class="hero-ring1"></div>
+      <div class="hero-ring2"></div>
+    </div>
+
+    <div class="hero-content">
+      <div class="live-badge">
+        <span class="live-dot"></span>
+        Live on the course now
+      </div>
+
+      <h1>One swing. One shot.<br><span class="hero-gold">The whole jackpot.</span></h1>
+
+      <p class="hero-sub">Scan the QR at the tee, pay $5, take your swing. Ace the Par&nbsp;3 and the course's live jackpot is yours.</p>
+
+      <!-- Odometer -->
+      <div class="odo-card">
+        <div class="odo-label">This course's live jackpot</div>
+        <div class="odo-amount">
+          <span class="odo-currency">$</span>
+          <span class="odo-number" id="odo1">2,500</span>
+          <span class="odo-unit">AUD</span>
+        </div>
+        <div class="odo-sub">Grows $1 with every swing · capped at $5,000</div>
+      </div>
+
+      <div class="hero-ctas">
+        <a href="#how" class="btn-primary">See How It Works →</a>
+        <a href="#jackpot" class="btn-ghost">The jackpot</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== HOW IT WORKS ===== -->
+  <section id="how" class="how">
+    <div class="section-header">
+      <div class="section-tag">How it works</div>
+      <h2 class="section-h2">Four steps. No account.</h2>
+      <p class="section-intro">From walking up to the tee to winning — it's about as simple as it gets.</p>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">01</div>
+        <div class="step-icon" style="background:#E6EFE8;">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#0C3A2C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M14 14h3v3M21 21v.01M17 21h.01M21 17v.01"/></svg>
+        </div>
+        <div class="step-title">Scan</div>
+        <p class="step-body">Point your phone at the QR code on the tee marker. No app to download.</p>
+      </div>
+
+      <div class="step">
+        <div class="step-num">02</div>
+        <div class="step-icon" style="background:#FBF1D6;">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#0C3A2C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2.5"/><path d="M2 10h20"/><path d="M6 15h4"/></svg>
+        </div>
+        <div class="step-title">Pay $5</div>
+        <p class="step-body">One flat fee per attempt. Tap to pay, you're in the pool instantly.</p>
+      </div>
+
+      <div class="step">
+        <div class="step-num">03</div>
+        <div class="step-icon" style="background:#E6EFE8;">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#0C3A2C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg>
+        </div>
+        <div class="step-title">Take your swing</div>
+        <p class="step-body">On-course sensors and camera record the shot automatically. Just play.</p>
+      </div>
+
+      <div class="step step-win">
+        <div class="step-num">04</div>
+        <div class="step-icon" style="background:rgba(236,178,43,.16);">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#ECB22B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M6 4h12v5a6 6 0 0 1-12 0V4ZM9 18h6M10 22h4M12 15v3"/></svg>
+        </div>
+        <div class="step-title">Win</div>
+        <p class="step-body">Ace the hole and the whole live jackpot lands in your account. That fast.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== WHY IT'S LEGIT ===== -->
+  <section class="legit">
+    <div class="legit-inner">
+      <div class="section-header">
+        <div class="section-tag">Why it's legit</div>
+        <h2 class="section-h2">Real money. Verified shots.</h2>
+        <p class="section-intro">No honour system, no catch. The course's hardware does the judging.</p>
+      </div>
+
+      <div class="trust-cards">
+        <div class="trust-card">
+          <div class="trust-icon" style="background:#E6EFE8;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0C3A2C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+          </div>
+          <div class="trust-title">Every shot is watched</div>
+          <p class="trust-body">Each Par 3 has permanent on-course sensors and a camera that confirm an ace the moment it drops. No disputes.</p>
+        </div>
+
+        <div class="trust-card">
+          <div class="trust-icon" style="background:#FBF1D6;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0C3A2C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          </div>
+          <div class="trust-title">Jackpots are real</div>
+          <p class="trust-body">The pool grows $1 with every attempt — floor of $2,500, cap of $5,000 AUD. What you see ticking is what you win.</p>
+        </div>
+
+        <div class="trust-card">
+          <div class="trust-icon" style="background:#E6EFE8;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0C3A2C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5"/></svg>
+          </div>
+          <div class="trust-title">Fault = auto-refund</div>
+          <p class="trust-body">If the hardware ever hiccups on your attempt, your $5 is refunded automatically. You're never charged for a shot we can't verify.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== THE JACKPOT ===== -->
+  <section id="jackpot" class="jackpot">
+    <div class="jackpot-ring"></div>
+    <div class="jackpot-inner">
+      <div>
+        <div class="jackpot-tag">The jackpot</div>
+        <h2>One pool per course.<br>It only goes up.</h2>
+        <p class="jackpot-desc">Every swing on the course feeds one shared jackpot. It climbs a dollar at a time until someone aces it — then it resets to the floor and starts the chase all over again.</p>
+        <div class="jackpot-stats">
+          <div>
+            <div class="jackpot-stat-val">$2,500</div>
+            <div class="jackpot-stat-label">Floor</div>
+          </div>
+          <div>
+            <div class="jackpot-stat-val">+$1</div>
+            <div class="jackpot-stat-label">Per swing</div>
+          </div>
+          <div>
+            <div class="jackpot-stat-val">$5,000</div>
+            <div class="jackpot-stat-label">Cap</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="jackpot-card">
+        <div class="jackpot-card-label">The Valley Estate · Hole 7</div>
+        <div class="jackpot-card-amount">
+          <span class="jackpot-card-currency">$</span>
+          <span class="jackpot-card-number" id="odo2">2,500</span>
+        </div>
+        <div class="jackpot-bar-track">
+          <div class="jackpot-bar-fill" id="jackpotBar"></div>
+        </div>
+        <div class="jackpot-bar-labels"><span>$2,500</span><span>$5,000</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FAQ ===== -->
+  <section id="faq" class="faq-section">
+    <div class="section-header">
+      <div class="section-tag">FAQ</div>
+      <h2 class="section-h2">Quick answers</h2>
+    </div>
+
+    <div class="faq-list">
+      <!-- FAQ items — edit the questions and answers below -->
+      <div class="faq-item">
+        <button class="faq-btn" aria-expanded="false">
+          <span>How much does it cost?</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-answer">$5 per attempt, flat. No subscription, no hidden fees — one tap, one swing.</div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-btn" aria-expanded="false">
+          <span>How do you know if I made it?</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-answer">Permanent on-course sensors and a camera at every Par 3 verify your shot automatically the instant the ball drops. No claiming, no arguing.</div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-btn" aria-expanded="false">
+          <span>What if something goes wrong?</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-answer">If the hardware ever faults on your attempt, your $5 is refunded automatically. You're never charged for a shot we can't verify.</div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-btn" aria-expanded="false">
+          <span>Do I need an account?</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-answer">Nope. Just scan the QR code at the tee and play. Winnings are paid straight to you.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOR COURSES CTA ===== -->
+  <section class="courses-cta-section">
+    <div class="courses-cta-band">
+      <div class="courses-cta-ring"></div>
+      <div class="courses-cta-grid">
+        <div>
+          <div class="courses-cta-tag">For golf courses</div>
+          <h2 class="courses-cta-heading">Run a course?<br>Earn from every swing.</h2>
+          <p class="courses-cta-body">We install the hardware, run the game, and pay you a cut of every attempt. Your members get a reason to keep coming back to the Par 3.</p>
+        </div>
+        <div style="justify-self:start;">
+          <a href="/for-courses" class="btn-courses">Partner with us →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer>
+    <div class="footer-inner">
+      <div>
+        <a href="#top" style="display:flex;align-items:center;gap:11px;text-decoration:none;">
+          <div class="footer-mark">
+            <svg viewBox="0 0 100 100" style="width:100%;height:100%;">
+              <defs><linearGradient id="gFoot" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFD659"/><stop offset="1" stop-color="#E2A015"/></linearGradient></defs>
+              <circle cx="50" cy="50" r="47" fill="url(#gFoot)"/>
+              <circle cx="50" cy="50" r="36" fill="none" stroke="#0A130F" stroke-width="4"/>
+              <circle cx="50" cy="50" r="24" fill="none" stroke="#0A130F" stroke-width="4"/>
+              <circle cx="50" cy="50" r="12.5" fill="#0A130F"/>
+            </svg>
+          </div>
+          <span class="footer-wordmark">
+            <span>Hole</span><span class="win-box">WIN</span><span>One</span>
+          </span>
+        </a>
+        <p class="footer-tagline">A hole-in-one jackpot game on real golf courses. Scan, swing, win — no account required.</p>
+      </div>
+      <div class="footer-links">
+        <a href="#how" class="footer-link">How it works</a>
+        <a href="#faq" class="footer-link">FAQ</a>
+        <a href="/for-courses" class="footer-link-gold">Run a course? Earn from every swing →</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-bottom-inner">
+        <span>© 2026 HoleWinOne · All amounts in AUD</span>
+        <span>Play responsibly · 18+</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // ---- Odometer animation ----
+    function animateOdo(el, from, to, duration) {
+      if (!el) return;
+      const start = performance.now();
+      (function tick(now) {
+        const t = Math.min(1, (now - start) / duration);
+        const ease = 1 - Math.pow(1 - t, 3);
+        const val = Math.round(from + (to - from) * ease);
+        el.textContent = val.toLocaleString('en-AU');
+        if (t < 1) requestAnimationFrame(tick);
+      })(start);
+    }
+
+    const odo1 = document.getElementById('odo1');
+    const odo2 = document.getElementById('odo2');
+    const bar  = document.getElementById('jackpotBar');
+    const TARGET = 3460;
+    const FLOOR  = 2500;
+    const CAP    = 5000;
+
+    // Animate on load
+    animateOdo(odo1, FLOOR, TARGET, 1600);
+    animateOdo(odo2, FLOOR, TARGET, 1600);
+    requestAnimationFrame(() => {
+      if (bar) bar.style.width = (((TARGET - FLOOR) / (CAP - FLOOR)) * 100).toFixed(1) + '%';
+    });
+
+    // Live ticking — $1 every 2.2 seconds
+    let current = TARGET;
+    setInterval(() => {
+      current = Math.min(CAP, current + 1);
+      const s = current.toLocaleString('en-AU');
+      if (odo1) odo1.textContent = s;
+      if (odo2) odo2.textContent = s;
+      if (bar) bar.style.width = (((current - FLOOR) / (CAP - FLOOR)) * 100).toFixed(1) + '%';
+    }, 2200);
+
+    // ---- FAQ accordion ----
+    document.querySelectorAll('.faq-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const item = btn.closest('.faq-item');
+        const isOpen = item.classList.contains('open');
+        // Close all
+        document.querySelectorAll('.faq-item').forEach(i => {
+          i.classList.remove('open');
+          i.querySelector('.faq-btn').setAttribute('aria-expanded', 'false');
+        });
+        // Toggle clicked
+        if (!isOpen) {
+          item.classList.add('open');
+          btn.setAttribute('aria-expanded', 'true');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
