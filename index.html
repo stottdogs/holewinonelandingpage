@@ -366,7 +366,7 @@
 
       <!-- Odometer -->
       <div class="odo-card">
-        <div class="odo-label">This course's live jackpot</div>
+        <div class="odo-label">Studley Greens GC live jackpot</div>
         <div class="odo-amount">
           <span class="odo-currency">$</span>
           <span class="odo-number" id="odo1">2,500</span>
@@ -626,15 +626,17 @@
       if (bar) bar.style.width = (((TARGET - FLOOR) / (CAP - FLOOR)) * 100).toFixed(1) + '%';
     });
 
-    // Live ticking — $1 every 2.2 seconds
+    // Live ticking — $1 every 15–20 seconds (randomised)
     let current = TARGET;
-    setInterval(() => {
+    function tick() {
       current = Math.min(CAP, current + 1);
       const s = current.toLocaleString('en-AU');
       if (odo1) odo1.textContent = s;
       if (odo2) odo2.textContent = s;
       if (bar) bar.style.width = (((current - FLOOR) / (CAP - FLOOR)) * 100).toFixed(1) + '%';
-    }, 2200);
+      setTimeout(tick, Math.random() * 5000 + 15000);
+    }
+    setTimeout(tick, Math.random() * 5000 + 15000);
 
     // ---- FAQ accordion ----
     document.querySelectorAll('.faq-btn').forEach(btn => {
