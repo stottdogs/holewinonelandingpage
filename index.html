@@ -163,7 +163,43 @@
     /* ---- LEGIT ---- */
     .legit { background: #F3EEE0; border-top: 1px solid #E4DDC9; border-bottom: 1px solid #E4DDC9; }
     .legit-inner { max-width: 1160px; margin: 0 auto; padding: clamp(64px,10vw,110px) 22px; }
-    .trust-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; margin-top: 48px; }
+
+    /* Hardware feature card */
+    .hardware-card {
+      background: #fff; border: 1px solid #EAE3D0; border-radius: 20px;
+      overflow: hidden; margin-top: 48px;
+      display: grid; grid-template-columns: 1fr 1fr;
+    }
+    @media (max-width: 700px) { .hardware-card { grid-template-columns: 1fr; } }
+    .hardware-img-wrap { position: relative; min-height: 300px; }
+    .hardware-img-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .hardware-live-badge {
+      position: absolute; bottom: 16px; left: 16px;
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(10,19,15,.75); backdrop-filter: blur(6px);
+      color: #ECB22B; font-family: 'Space Mono', monospace;
+      font-size: 11px; letter-spacing: .16em; text-transform: uppercase;
+      padding: 7px 14px; border-radius: 999px;
+    }
+    .hardware-live-dot { width: 7px; height: 7px; border-radius: 50%; background: #ECB22B; animation: pulseDot 2s infinite; }
+    .hardware-content { padding: 40px 36px; display: flex; flex-direction: column; justify-content: center; gap: 16px; }
+    .hardware-tag {
+      font-family: 'Space Mono', monospace; font-size: 11px;
+      letter-spacing: .2em; text-transform: uppercase; color: #C99312; font-weight: 700;
+    }
+    .hardware-heading {
+      font-family: 'Archivo', sans-serif; font-weight: 900;
+      font-size: clamp(22px,3vw,32px); line-height: 1.1; letter-spacing: -.02em; color: #0C3A2C; margin: 0;
+    }
+    .hardware-body { font-size: 15px; color: #4C5A50; line-height: 1.6; margin: 0; }
+    .hardware-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+    .hardware-pill {
+      font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: .12em;
+      text-transform: uppercase; font-weight: 700; color: #0C3A2C;
+      background: #E6EFE8; border: 1px solid #C8DACE; padding: 6px 12px; border-radius: 999px;
+    }
+
+    .trust-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; margin-top: 18px; }
     .trust-card { background: #fff; border: 1px solid #EAE3D0; border-radius: 18px; padding: 32px 28px; }
     .trust-icon {
       width: 52px; height: 52px; border-radius: 50%;
@@ -436,6 +472,27 @@
         <div class="section-tag">Why it's legit</div>
         <h2 class="section-h2">Real money. Verified shots.</h2>
         <p class="section-intro">No honour system, no catch. The course's hardware does the judging.</p>
+      </div>
+
+      <!-- Hardware feature card -->
+      <div class="hardware-card">
+        <div class="hardware-img-wrap">
+          <img src="https://i.imgur.com/yhLKb0r.jpeg" alt="Solar-powered camera on a golf course tree">
+          <div class="hardware-live-badge">
+            <span class="hardware-live-dot"></span>
+            Live · Solar-powered
+          </div>
+        </div>
+        <div class="hardware-content">
+          <div class="hardware-tag">The Hardware</div>
+          <h3 class="hardware-heading">A self-powered eye on every Par 3.</h3>
+          <p class="hardware-body">A solar panel keeps a weatherproof pan-tilt camera and shot sensors running year-round — no trenching, no mains power, no Wi-Fi run to the tee. It mounts in an afternoon and watches every swing, confirming an ace the instant it drops.</p>
+          <div class="hardware-tags">
+            <span class="hardware-pill">Solar — no wiring</span>
+            <span class="hardware-pill">Weatherproof</span>
+            <span class="hardware-pill">Installs in an afternoon</span>
+          </div>
+        </div>
       </div>
 
       <div class="trust-cards">
