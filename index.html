@@ -66,7 +66,19 @@
       position: absolute; right: -30px; top: -30px;
       width: 260px; height: 260px; border-radius: 50%; border: 1px solid rgba(236,178,43,.10);
     }
-    .hero-content { position: relative; max-width: 920px; margin: 0 auto; text-align: center; }
+    .hero-content { position: relative; max-width: 1160px; margin: 0 auto; display: flex; align-items: center; gap: clamp(32px,5vw,72px); }
+    .hero-text { flex: 1; min-width: 0; text-align: left; }
+    .hero-video-wrap {
+      flex: 0 0 clamp(280px,38vw,500px); position: relative;
+      border-radius: 18px; overflow: hidden;
+      box-shadow: 0 40px 80px -20px rgba(0,0,0,.7), 0 0 0 1px rgba(236,178,43,.18);
+    }
+    .hero-video-wrap video { display: block; width: 100%; height: auto; }
+    @media (max-width: 780px) {
+      .hero-content { flex-direction: column; }
+      .hero-text { text-align: center; }
+      .hero-video-wrap { flex: none; width: 100%; max-width: 460px; }
+    }
     .live-badge {
       display: inline-flex; align-items: center; gap: 8px;
       background: rgba(236,178,43,.12); border: 1px solid rgba(236,178,43,.32);
@@ -85,12 +97,12 @@
     .hero-gold { color: #ECB22B; }
     .hero-sub {
       font-size: clamp(16px,2.4vw,20px); line-height: 1.5; color: #CDE0D6;
-      max-width: 560px; margin: 20px auto 0;
+      max-width: 560px; margin: 20px 0 0;
     }
 
     /* Odometer card */
     .odo-card {
-      margin: 40px auto 0; max-width: 460px;
+      margin: 40px 0 0; max-width: 460px;
       background: #0A2A1F; border: 1px solid rgba(236,178,43,.28);
       border-radius: 18px; padding: 26px 28px;
       box-shadow: 0 30px 70px -30px rgba(0,0,0,.6);
@@ -112,7 +124,8 @@
     .odo-unit { font-family: 'Space Mono', monospace; font-size: 13px; color: #8FB3A4; margin-left: 6px; }
     .odo-sub { font-size: 13px; color: #8FB3A4; margin-top: 8px; }
 
-    .hero-ctas { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 34px; }
+    .hero-ctas { display: flex; flex-wrap: wrap; gap: 12px; justify-content: flex-start; margin-top: 34px; }
+    @media (max-width: 780px) { .hero-ctas { justify-content: center; } }
     .btn-primary {
       display: inline-flex; align-items: center; gap: 8px;
       background: #ECB22B; color: #0A130F; font-weight: 800; font-size: 16px;
@@ -391,29 +404,37 @@
     </div>
 
     <div class="hero-content">
-      <div class="live-badge">
-        <span class="live-dot"></span>
-        Live on the course now
-      </div>
-
-      <h1>One swing. One shot.<br><span class="hero-gold">The whole jackpot.</span></h1>
-
-      <p class="hero-sub">Scan the QR at the tee, pay $5, take your swing. Ace the Par&nbsp;3 and the course's live jackpot is yours.</p>
-
-      <!-- Odometer -->
-      <div class="odo-card">
-        <div class="odo-label">Studley Greens GC live jackpot</div>
-        <div class="odo-amount">
-          <span class="odo-currency">$</span>
-          <span class="odo-number" id="odo1">2,500</span>
-          <span class="odo-unit">AUD</span>
+      <div class="hero-text">
+        <div class="live-badge">
+          <span class="live-dot"></span>
+          Live on the course now
         </div>
-        <div class="odo-sub">Grows $1 with every swing · capped at $5,000</div>
+
+        <h1>One swing. One shot.<br><span class="hero-gold">The whole jackpot.</span></h1>
+
+        <p class="hero-sub">Scan the QR at the tee, pay $5, take your swing. Ace the Par&nbsp;3 and the course's live jackpot is yours.</p>
+
+        <!-- Odometer -->
+        <div class="odo-card">
+          <div class="odo-label">Studley Greens GC live jackpot</div>
+          <div class="odo-amount">
+            <span class="odo-currency">$</span>
+            <span class="odo-number" id="odo1">2,500</span>
+            <span class="odo-unit">AUD</span>
+          </div>
+          <div class="odo-sub">Grows $1 with every swing · capped at $5,000</div>
+        </div>
+
+        <div class="hero-ctas">
+          <a href="#how" class="btn-primary">See How It Works →</a>
+          <a href="#jackpot" class="btn-ghost">The jackpot</a>
+        </div>
       </div>
 
-      <div class="hero-ctas">
-        <a href="#how" class="btn-primary">See How It Works →</a>
-        <a href="#jackpot" class="btn-ghost">The jackpot</a>
+      <div class="hero-video-wrap">
+        <video autoplay muted loop playsinline>
+          <source src="HoleWinOneVideo.mp4" type="video/mp4">
+        </video>
       </div>
     </div>
   </header>
